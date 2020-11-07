@@ -1,86 +1,109 @@
 extends Node2D
 
+
+var timer : Timer
 var player : KinematicBody2D
 var cell_size = 32
+var screen_y : int
+var offset = 10
 
 onready var tile_map = $TileMap
 
 onready var ground_enemy_pr = preload("res://Enemy/Ground_enemy/Ground_Enemy.tscn")
-onready var flying_enemy_pr = preload("res://Enemy/Flying_enemy.tscn") 
+onready var flying_enemy_pr = preload("res://Enemy/Flying_enemy.tscn")
+onready var trash_pr = preload("res://Collectables/Trash.tscn")
 
-var tile_count = 0
-var tiles_to_set = 10
+var start_pt = 0
+var end_pt : int
 
-var screen_y : int
-var screen_x = 0
+var tiles_to_set = 30
 
-var player_cur_x_pos : float
-var spawn_tile_cap  = 200
-var const_tile_cap = 200
+var spawn_limit = 15
+var spawn_limit_const = 15
 
-var remove_cap_cons = 400
-var remove_tile_cap = 400
-
-var remove_tile_x = -10
+var player_pos_x : float
 
 var ground_enemy : StaticBody2D
 var sky_enemy : StaticBody2D
+var trash : StaticBody2D
+
+var old_enemy_x : float
+
+var remove_start_pt : int
+var remove_end_pt : int
 
 
 func _ready():
-	var screen_size = get_viewport().size
-	screen_y  = (screen_size.y / cell_size) - 10
-	spawn_tiles()
+	randomize()
+	init_timer()
+	timer.start()
 	get_player()
-	spawning_enemies()
+	screen_y = get_viewport().size.y/cell_size - offset
+	end_pt = start_pt + tiles_to_set
+	spawn_tiles()
+
 	
 func _physics_process(delta):
-	player_cur_x_pos = player.position.x
-	if player_cur_x_pos >= spawn_tile_cap:
-		spawn_tile_cap += const_tile_cap
+	
+	
+	
+	player_pos_x = player.position.x/cell_size
+	
+	if player_pos_x + tiles_to_set/2 > start_pt:
 		spawn_tiles()
 		
-		
-	if Input.is_action_just_pressed("ui_left"):
+	if player_pos_x - tiles_to_set*2 > remove_start_pt:
 		remove_tiles()
 	
-	if player_cur_x_pos >= remove_tile_cap:
-		remove_tile_cap += remove_cap_cons
-		print(remove_tile_cap)
-		remove_tiles()
-		
-		
+func spawn_tiles():
+	for i in range(start_pt,end_pt):
+		tile_map.set_cell(i,screen_y,0)
+		tile_map.set_cell(i,screen_y+1,0)
+		tile_map.set_cell(i,screen_y+2,0)
+	remove_tiles()
+	start_pt = end_pt
+
+	end_pt += tiles_to_set
+	
+func remove_tiles():
+	remove_start_pt = player_pos_x - tiles_to_set*2
+	remove_end_pt = remove_start_pt + tiles_to_set
+	for i in range(remove_start_pt,remove_end_pt):
+		if tile_map.get_cell(i,screen_y) != -1:
+			tile_map.set_cell(i,screen_y,-1)
+			tile_map.set_cell(i,screen_y+1,-1)
+			tile_map.set_cell(i,screen_y+2,-1)
 	
 func get_player():
 	player = get_parent().get_node("Player")
 
-
-	
-func spawn_tiles():
-	
-	for i in range(tiles_to_set):
-		tile_map.set_cell(screen_x,screen_y,0)
-		tile_map.set_cell(screen_x,screen_y+1,0)
-		tile_map.set_cell(screen_x,screen_y+2,0)
-		tile_count += 1
-		screen_x += 1
-	
-
-
-#work in progress
-func remove_tiles():
-	for i in range(tiles_to_set):
-		tile_map.set_cell(remove_tile_x,screen_y,-1)
-		tile_map.set_cell(remove_tile_x,screen_y+1,-1)
-		tile_map.set_cell(remove_tile_x,screen_y+2,-1)
-		remove_tile_x += 1
-	
 		
 func spawning_enemies():
-	pass
+	spawn_flying_enemy()
+	spawn_ground_enemy()
 
 func spawn_flying_enemy():
 	pass
 	
-func spawning_ground_enemy():
-	pass
+func spawn_ground_enemy():
+	print("spawning")
+	var enemy_x = rand_range(start_pt,end_pt) * cell_size
+	var enemy_y = screen_y* cell_size - cell_size
+	
+	
+	if enemy_x < old_enemy_x + 256:
+		pass
+	else:
+		ground_enemy = ground_enemy_pr.instance()
+		ground_enemy.position = Vector2(enemy_x,enemy_y)
+		get_parent().add_child(ground_enemy)
+		old_enemy_x = enemy_x
+		trash = trash_pr.instance()
+		trash.position = Vector2(enemy_x,enemy_y-128)
+		get_parent().add_child(trash)
+
+func init_timer():
+	timer = Timer.new()
+	timer.wait_time = 1
+	timer.connect("timeout",self,"spawn_ground_enemy")
+	add_child(timer)

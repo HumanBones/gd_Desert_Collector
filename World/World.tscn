@@ -12,3 +12,17 @@
 position = Vector2( 352, -288 )
 
 [node name="TileMap" parent="." instance=ExtResource( 1 )]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -112.0
+margin_right = 112.0
+margin_bottom = 72.0
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
