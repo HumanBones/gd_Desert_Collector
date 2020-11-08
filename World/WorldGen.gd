@@ -32,6 +32,8 @@ var old_enemy_x : float
 var remove_start_pt : int
 var remove_end_pt : int
 
+var f_spawn_cap = 1000
+
 
 func _ready():
 	randomize()
@@ -54,6 +56,11 @@ func _physics_process(delta):
 		
 	if player_pos_x - tiles_to_set*2 > remove_start_pt:
 		remove_tiles()
+	
+	if player_pos_x > f_spawn_cap:
+		pass
+		#spawn flying enemies
+		
 	
 func spawn_tiles():
 	for i in range(start_pt,end_pt):

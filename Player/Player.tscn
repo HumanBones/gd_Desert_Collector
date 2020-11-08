@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Player/Player-Sheet.png" type="Texture" id=1]
 [ext_resource path="res://Player/Player.gd" type="Script" id=2]
@@ -57,32 +57,63 @@ tracks/0/keys = {
 "values": [ 1, 2, 3, 4 ]
 }
 
+[sub_resource type="Animation" id=5]
+resource_name = "Slide"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/path = NodePath("Hitbox/CollisionShape2D:shape:extents")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 10, 28 ), Vector2( 10.6762, 8.69674 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("Hitbox/CollisionShape2D:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector2( 1.06067, -20.1525 ), Vector2( 1.06067, 1.76781 ) ]
+}
+
 [node name="Player" type="KinematicBody2D"]
 collision_layer = 2
 collision_mask = 7
 script = ExtResource( 2 )
 
 [node name="Sprite" type="Sprite" parent="."]
-scale = Vector2( 2, 2 )
+position = Vector2( -3.8147e-06, -17.6776 )
+scale = Vector2( 2, 5 )
 texture = ExtResource( 1 )
 hframes = 10
-frame = 9
+frame = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 0.707108, 3.53553 )
+position = Vector2( 1.06066, 2.82842 )
 shape = SubResource( 1 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "Idle"
 anims/Idle = SubResource( 2 )
 anims/Jumping = SubResource( 3 )
 anims/Runing = SubResource( 4 )
+anims/Slide = SubResource( 5 )
 
 [node name="Hitbox" parent="." instance=ExtResource( 3 )]
 collision_layer = 0
 collision_mask = 2147483660
 
 [node name="CollisionShape2D" parent="Hitbox" index="0"]
-position = Vector2( 2.12133, -21.5667 )
+position = Vector2( 1.41422, -17.6776 )
 scale = Vector2( 0.922666, 1 )
 
 [node name="Cam" type="Camera2D" parent="."]

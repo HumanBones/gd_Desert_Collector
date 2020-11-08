@@ -47,9 +47,8 @@ func movment():
 		anim_player.play("Jumping")
 		audio_player.play()
 
-	if Input.is_action_just_pressed("slide"):
-		pass
-		#slide
+	if Input.is_action_pressed("slide"):
+		anim_player.play("Slide")
 
 	
 	
