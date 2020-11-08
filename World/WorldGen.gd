@@ -58,10 +58,7 @@ func _physics_process(delta):
 	if player_pos_x - tiles_to_set*2 > remove_start_pt:
 		remove_tiles()
 	
-	if player_pos_x > f_spawn_cap:
-		pass
-		f_spawn_cap += f_spawn_cap_const
-		#spawn flying enemies
+
 		
 	
 func spawn_tiles():
@@ -95,13 +92,17 @@ func spawning_enemies():
 
 
 func spawn_flying_enemy():
-	var enemy_x = rand_range(start_pt,end_pt) * cell_size
-	var enemy_y = screen_y * cell_size - 256
-
-	flying_enemy = flying_enemy_pr.instance()
-	flying_enemy.position = Vector2(enemy_x,enemy_y)
-	get_parent.add_child(flying_enemy)
+	if player_pos_x > f_spawn_cap:
+		f_spawn_cap += f_spawn_cap_const
 	
+		var enemy_x = rand_range(start_pt,end_pt) * cell_size
+		var enemy_y = screen_y * cell_size - 256
+
+		if enemy_x > old_enemy_x + 194:
+			flying_enemy = flying_enemy_pr.instance()
+			flying_enemy.position = Vector2(enemy_x,enemy_y)
+			get_parent.add_child(flying_enemy)
+		
 func spawn_ground_enemy():
 	print("spawning")
 	var enemy_x = rand_range(start_pt,end_pt) * cell_size
