@@ -33,6 +33,7 @@ var remove_start_pt : int
 var remove_end_pt : int
 
 var f_spawn_cap = 1000
+var f_spawn_cap_const = 500
 
 
 func _ready():
@@ -59,6 +60,7 @@ func _physics_process(delta):
 	
 	if player_pos_x > f_spawn_cap:
 		pass
+		f_spawn_cap += f_spawn_cap_const
 		#spawn flying enemies
 		
 	
@@ -86,20 +88,28 @@ func get_player():
 
 		
 func spawning_enemies():
-	spawn_flying_enemy()
-	spawn_ground_enemy()
+	if spawn_ground_enemy:
+		pass
+	else:
+		spawn_flying_enemy
+
 
 func spawn_flying_enemy():
-	pass
+	var enemy_x = rand_range(start_pt,end_pt) * cell_size
+	var enemy_y = screen_y * cell_size - 256
+
+	flying_enemy = flying_enemy_pr.instance()
+	flying_enemy.position = Vector2(enemy_x,enemy_y)
+	get_parent.add_child(flying_enemy)
 	
 func spawn_ground_enemy():
 	print("spawning")
 	var enemy_x = rand_range(start_pt,end_pt) * cell_size
-	var enemy_y = screen_y* cell_size - cell_size
+	var enemy_y = screen_y * cell_size - cell_size
 	
 	
 	if enemy_x < old_enemy_x + 256:
-		pass
+		return false
 	else:
 		ground_enemy = ground_enemy_pr.instance()
 		ground_enemy.position = Vector2(enemy_x,enemy_y)
@@ -108,6 +118,7 @@ func spawn_ground_enemy():
 		trash = trash_pr.instance()
 		trash.position = Vector2(enemy_x,enemy_y-128)
 		get_parent().add_child(trash)
+		return true
 
 func init_timer():
 	timer = Timer.new()
