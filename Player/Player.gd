@@ -1,9 +1,12 @@
 extends KinematicBody2D
 
-export var speed = 400
-export var jump_power = 2000
+export var normal_speed = 400
+export var max_speed = 1200
+export var jump_power = 1800
 export var gravity = 200
-export var max_grav = 1000
+export var max_grav = 600
+
+var speed = normal_speed
 
 var velocity : Vector2
 var dead = false
@@ -13,15 +16,20 @@ var grounded = false
 var lives = 3 #lives?
 var score = 0
 
+var is_sliding = false
+
 
 onready var spiret = $Sprite
 onready var anim_player = $AnimationPlayer
 onready var audio_player = $AudioStreamPlayer
+onready var restart_layer = $CanvasLayer/Label
+onready var audio_slide = $Slide
 
 
 
 func _ready():
 	update_ui()
+
 
 func _process(delta):
 	
@@ -34,27 +42,30 @@ func _process(delta):
 
 func _physics_process(delta):
 	if !dead:
+		restart_layer.visible = false
 		movment()
 	else:
 		self.visible = false
-		print("dead")
-		#display death screen
+		restart_layer.visible = true
 
 func movment():
 
-	if Input.is_action_just_pressed("jump") && grounded:
+	if Input.is_action_just_pressed("jump") && grounded && !is_sliding:
 		velocity.y = -jump_power
 		anim_player.play("Jumping")
 		audio_player.play()
 
-	if Input.is_action_pressed("slide"):
-		anim_player.play("Slide")
+	if Input.is_action_just_pressed("slide"):
+		is_sliding = true
 
 	
 	
 
 	if is_on_floor():
-		anim_player.play("Runing")
+		if is_sliding:
+			anim_player.play("Slide")
+		else:
+			anim_player.play("Runing")
 		velocity.x = speed
 		grounded = true
 	else:
@@ -80,3 +91,10 @@ func _on_Hitbox_body_entered(body):
 	
 func update_ui():
 	get_parent().get_node("CanvasLayer/Label").text = str(score)
+
+
+func sliding_finished():
+	is_sliding = false
+
+func play_audio_slide():
+	audio_slide.play()

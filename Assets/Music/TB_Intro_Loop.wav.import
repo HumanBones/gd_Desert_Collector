@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/TB_Intro_Loop.wav-4f5a71d8cb922d504d9e63b94883d82f.sample"
+
+[deps]
+
+source_file="res://Assets/Music/TB_Intro_Loop.wav"
+dest_files=[ "res://.import/TB_Intro_Loop.wav-4f5a71d8cb922d504d9e63b94883d82f.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=true
+compress/mode=0

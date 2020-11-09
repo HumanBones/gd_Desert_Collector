@@ -15,9 +15,10 @@ _global_script_class_icons={
 
 [application]
 
-config/name="Runner"
-run/main_scene="res://World/World.tscn"
-config/icon="res://Player/icon.png"
+config/name="Desert Collector"
+run/main_scene="res://Menu/Main_Menu.tscn"
+config/icon="res://Enemy/Ground_enemy/Cactus.png"
+config/windows_native_icon="res://Assets/Icon/Cactus.ico"
 
 [display]
 
@@ -86,4 +87,5 @@ slide={
 [rendering]
 
 quality/2d/use_pixel_snap=true
+environment/default_clear_color=Color( 0.764706, 0.745098, 0.576471, 1 )
 environment/default_environment="res://default_env.tres"

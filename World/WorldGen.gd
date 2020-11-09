@@ -10,13 +10,13 @@ var offset = 10
 onready var tile_map = $TileMap
 
 onready var ground_enemy_pr = preload("res://Enemy/Ground_enemy/Ground_Enemy.tscn")
-onready var flying_enemy_pr = preload("res://Enemy/Flying_enemy.tscn")
+onready var flying_enemy_pr = preload("res://Enemy/Flying_enemy/Flying_enemy.tscn")
 onready var trash_pr = preload("res://Collectables/Trash.tscn")
 
 var start_pt = 0
 var end_pt : int
 
-var tiles_to_set = 30
+var tiles_to_set = 35
 
 var spawn_limit = 15
 var spawn_limit_const = 15
@@ -24,16 +24,19 @@ var spawn_limit_const = 15
 var player_pos_x : float
 
 var ground_enemy : StaticBody2D
-var sky_enemy : StaticBody2D
+var flying_enemy : StaticBody2D
 var trash : StaticBody2D
 
-var old_enemy_x : float
+var g_old_enemy_x : float
+var f_old_enemy_x : float
 
 var remove_start_pt : int
 var remove_end_pt : int
 
 var f_spawn_cap = 1000
 var f_spawn_cap_const = 500
+
+var spawn_time = 1.5
 
 
 func _ready():
@@ -85,44 +88,54 @@ func get_player():
 
 		
 func spawning_enemies():
-	if spawn_ground_enemy:
-		pass
-	else:
-		spawn_flying_enemy
-
+	if !spawn_ground_enemy():
+		spawn_flying_enemy()
 
 func spawn_flying_enemy():
-	if player_pos_x > f_spawn_cap:
-		f_spawn_cap += f_spawn_cap_const
+	print("spawning f")
+	#if player_pos_x > f_spawn_cap:
+		#print("spawning flying")
+		#f_spawn_cap += f_spawn_cap_const
 	
-		var enemy_x = rand_range(start_pt,end_pt) * cell_size
-		var enemy_y = screen_y * cell_size - 256
+	var enemy_x = rand_range(start_pt+8,end_pt-8) * cell_size
+	print(enemy_x)
+	var enemy_y = screen_y * cell_size - cell_size*3
 
-		if enemy_x > old_enemy_x + 194:
-			flying_enemy = flying_enemy_pr.instance()
-			flying_enemy.position = Vector2(enemy_x,enemy_y)
-			get_parent.add_child(flying_enemy)
+	if enemy_x < f_old_enemy_x + cell_size*5 or enemy_x < g_old_enemy_x + cell_size * 3:
+		return false
+	else:
+		flying_enemy = flying_enemy_pr.instance()
+		flying_enemy.position = Vector2(enemy_x,enemy_y)
+		get_parent().add_child(flying_enemy)
+		f_old_enemy_x = enemy_x
+		
+		trash = trash_pr.instance()
+		trash.position = Vector2(enemy_x,enemy_y + cell_size*2)
+		get_parent().add_child(trash)
+		return true
 		
 func spawn_ground_enemy():
-	print("spawning")
+	print("spawning g")
 	var enemy_x = rand_range(start_pt,end_pt) * cell_size
-	var enemy_y = screen_y * cell_size - cell_size
+	print(enemy_x)
+	var enemy_y = screen_y * cell_size - cell_size*2
 	
 	
-	if enemy_x < old_enemy_x + 256:
+	if enemy_x < g_old_enemy_x + cell_size * 5 or enemy_x < f_old_enemy_x + cell_size * 4:
 		return false
 	else:
 		ground_enemy = ground_enemy_pr.instance()
 		ground_enemy.position = Vector2(enemy_x,enemy_y)
 		get_parent().add_child(ground_enemy)
-		old_enemy_x = enemy_x
+		g_old_enemy_x = enemy_x
+		
 		trash = trash_pr.instance()
-		trash.position = Vector2(enemy_x,enemy_y-128)
+		trash.position = Vector2(enemy_x,enemy_y- cell_size*2)
 		get_parent().add_child(trash)
 		return true
 
 func init_timer():
 	timer = Timer.new()
-	timer.wait_time = 1
-	timer.connect("timeout",self,"spawn_ground_enemy")
+	timer.wait_time = spawn_time
+	timer.connect("timeout",self,"spawning_enemies")
 	add_child(timer)
